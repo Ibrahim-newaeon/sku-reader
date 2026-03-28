@@ -315,8 +315,23 @@ function hdrs(key){
 // Setting Content-Type: application/json triggers CORS preflight which GAS blocks
 // Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
 function gasPost(url, payload){
-  var encoded = encodeURIComponent(JSON.stringify(payload));
-  return fetch(url + '?data=' + encoded);
+  return new Promise(function(resolve, reject){
+    var cb='gascb_'+Date.now();
+    window[cb]=function(data){
+      delete window[cb];
+      var s=document.getElementById(cb);
+      if(s) s.parentNode.removeChild(s);
+      resolve(data);
+    };
+    var s=document.createElement('script');
+    s.id=cb;
+    s.onerror=function(){
+      delete window[cb];
+      reject(new Error('Script load failed'));
+    };
+    s.src=url+'?callback='+cb+'&data='+encodeURIComponent(JSON.stringify(payload))+'&t='+Date.now();
+    document.head.appendChild(s);
+  });
 }
 
 async function testKey(){

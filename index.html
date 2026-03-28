@@ -314,11 +314,10 @@ function hdrs(key){
 // ── CRITICAL: Google Apps Script fetch must NOT set Content-Type
 // Setting Content-Type: application/json triggers CORS preflight which GAS blocks
 // Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
-function gasPost(url, payload){
-  return fetch(url, {
+function gasPost(url, payload) {
     method: 'POST',
+    mode: 'no-cors',
     body: JSON.stringify(payload)
-    // NO headers — this avoids CORS preflight
   });
 }
 

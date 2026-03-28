@@ -11,98 +11,78 @@
   --gold:#C9A84C;--gold2:rgba(201,168,76,.12);--gold3:rgba(201,168,76,.25);
   --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);
   --t1:#F0EDE6;--t2:#9A9590;--t3:#5A5650;
-  --green:#4CAF50;--red:#E24B4A;
-  --r:10px;
+  --green:#4CAF50;--red:#E24B4A;--r:10px;
 }
 body{background:var(--bg);color:var(--t1);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
-header{
-  position:sticky;top:0;z-index:50;
-  background:rgba(14,14,14,.95);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--bd);
-  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;
-}
+header{position:sticky;top:0;z-index:50;background:rgba(14,14,14,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .logo-dot{width:26px;height:26px;background:var(--gold);border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#000}
 .chip{background:var(--s2);border:1px solid var(--bd);padding:4px 12px;border-radius:20px;font-size:11px;color:var(--t2)}
 .chip b{color:var(--gold)}
 main{max-width:860px;margin:0 auto;padding:28px 20px}
-.api-row{
-  display:flex;align-items:center;gap:10px;
-  background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);
-  padding:14px 16px;margin-bottom:20px;
-}
-.api-row label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);white-space:nowrap}
-.api-row input{
-  flex:1;background:var(--s3);border:1px solid var(--bd);color:var(--t1);
-  font-family:monospace;font-size:12px;padding:8px 12px;border-radius:7px;outline:none;transition:border .2s;
-}
-.api-row input:focus{border-color:var(--gold)}
-.api-row input::placeholder{color:var(--t3)}
-.drop{
-  border:1.5px dashed var(--bd2);border-radius:var(--r);
-  padding:44px 24px;text-align:center;cursor:pointer;
-  transition:all .2s;background:var(--s1);margin-bottom:20px;position:relative;
-}
+.row{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:13px 16px;margin-bottom:10px}
+.row label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);white-space:nowrap;min-width:82px}
+.row input{flex:1;background:var(--s3);border:1px solid var(--bd);color:var(--t1);font-family:monospace;font-size:12px;padding:8px 12px;border-radius:7px;outline:none;transition:border .2s}
+.row input:focus{border-color:var(--gold)}
+.row input::placeholder{color:var(--t3)}
+.sbar{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:11px 15px;margin-bottom:20px;font-size:12px}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.sdot.on{background:var(--green);box-shadow:0 0 5px var(--green)}
+.sdot.err{background:var(--red)}
+.sdot.spin{background:var(--gold);animation:pulse 1s infinite}
+#stxt{color:var(--t2);flex:1}
+.drop{border:1.5px dashed var(--bd2);border-radius:var(--r);padding:44px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--s1);margin-bottom:20px;position:relative}
 .drop:hover,.drop.over{border-color:var(--gold);background:var(--gold2)}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .drop-ico{width:48px;height:48px;border:1.5px solid var(--bd2);border-radius:10px;display:grid;place-items:center;margin:0 auto 14px;font-size:22px}
 .drop h3{font-size:14px;font-weight:500;margin-bottom:5px}
 .drop p{font-size:12px;color:var(--t2)}.drop p span{color:var(--gold)}
 .queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
-.q-item{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;position:relative}
-.q-item img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-.q-foot{padding:7px 9px;display:flex;align-items:center;gap:6px}
-.q-name{font-size:10px;color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qi{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;position:relative}
+.qi img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.qf{padding:7px 9px;display:flex;align-items:center;gap:6px}
+.qn{font-size:10px;color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .dot.idle{background:var(--t3)}.dot.spin{background:var(--gold);animation:pulse 1s infinite}
 .dot.ok{background:var(--green)}.dot.err{background:var(--red)}
-.q-del{
-  position:absolute;top:5px;right:5px;width:20px;height:20px;
-  background:rgba(0,0,0,.7);border:1px solid var(--bd);border-radius:50%;
-  color:var(--t2);font-size:11px;cursor:pointer;display:grid;place-items:center;transition:all .15s;
-}
-.q-del:hover{background:var(--red);color:#fff;border-color:var(--red)}
-.prog-wrap{margin-bottom:14px;display:none}
-.prog-bar{height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
-.prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s;width:0}
-.prog-label{font-size:11px;color:var(--t2);margin-top:6px;text-align:right}
-.actions{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.qdel{position:absolute;top:5px;right:5px;width:20px;height:20px;background:rgba(0,0,0,.75);border:1px solid var(--bd);border-radius:50%;color:var(--t2);font-size:11px;cursor:pointer;display:grid;place-items:center;transition:all .15s}
+.qdel:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.pw{margin-bottom:14px;display:none}
+.pb{height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pf{height:100%;background:var(--gold);border-radius:2px;transition:width .3s;width:0}
+.pl{font-size:11px;color:var(--t2);margin-top:6px;text-align:right}
+.actions{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 button{padding:10px 18px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
-.btn-p{background:var(--gold);color:#000}.btn-p:hover{background:#D4B560}
-.btn-p:disabled{opacity:.4;cursor:not-allowed}
-.btn-s{background:var(--s2);color:var(--t1);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--bd2)}
-.btn-s:disabled{opacity:.35;cursor:not-allowed}
-.res-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.res-hd h2{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
-.table-wrap{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+.bp{background:var(--gold);color:#000}.bp:hover{background:#D4B560}.bp:disabled{opacity:.4;cursor:not-allowed}
+.bs{background:var(--s2);color:var(--t1);border:1px solid var(--bd)}.bs:hover{border-color:var(--bd2)}.bs:disabled{opacity:.35;cursor:not-allowed}
+.bg{background:rgba(76,175,80,.12);color:var(--green);border:1px solid rgba(76,175,80,.25)}.bg:hover{background:rgba(76,175,80,.22)}.bg:disabled{opacity:.35;cursor:not-allowed}
+.ss{background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.2);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:none;align-items:center;gap:10px;font-size:12px}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.rh h2{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
+.tw{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--s2);padding:9px 13px;text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--bd)}
 tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
 tbody tr:last-child{border:none}
 tbody tr:hover{background:var(--s1)}
 td{padding:10px 13px;vertical-align:middle}
-.thumb{width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
-.fname{font-size:10px;color:var(--t2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px}
-.sku-pills{display:flex;flex-wrap:wrap;gap:5px}
+.th{width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
+.fn{font-size:10px;color:var(--t2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
 .pill{background:var(--gold2);border:1px solid var(--gold3);color:var(--gold);padding:3px 9px;border-radius:5px;font-family:monospace;font-size:12px;font-weight:500;cursor:pointer;transition:background .15s;user-select:none}
 .pill:hover{background:var(--gold3)}
-.pill-none{font-size:11px;color:var(--t3);font-style:italic}
-.status-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
-.sb-ok{background:rgba(76,175,80,.1);color:var(--green);border:1px solid rgba(76,175,80,.25)}
-.sb-err{background:rgba(226,75,74,.1);color:var(--red);border:1px solid rgba(226,75,74,.25)}
-.sb-spin{background:var(--gold2);color:var(--gold);border:1px solid var(--gold3)}
-.sb-pend{background:var(--s2);color:var(--t3);border:1px solid var(--bd)}
-.note{font-size:11px;color:var(--t3);max-width:180px;line-height:1.5}
-.err-box{background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--red);display:none}
+.pnone{font-size:11px;color:var(--t3);font-style:italic}
+.sb{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
+.sp{background:var(--s2);color:var(--t3);border:1px solid var(--bd)}
+.sq{background:var(--gold2);color:var(--gold);border:1px solid var(--gold3)}
+.so{background:rgba(76,175,80,.1);color:var(--green);border:1px solid rgba(76,175,80,.25)}
+.se{background:rgba(226,75,74,.1);color:var(--red);border:1px solid rgba(226,75,74,.25)}
+.note{font-size:11px;color:var(--t3);max-width:160px;line-height:1.5}
+.eb{background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--red);display:none}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--s2);border:1px solid var(--bd2);padding:9px 16px;border-radius:8px;font-size:12px;color:var(--gold);pointer-events:none;opacity:0;transform:translateY(6px);transition:all .2s;z-index:200}
 .toast.show{opacity:1;transform:translateY(0)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-@media(max-width:600px){
-  header{padding:12px 14px}
-  main{padding:18px 12px}
-  .api-row{flex-wrap:wrap}
-  .actions button{flex:1;justify-content:center;min-height:56px}
-}
+@media(max-width:600px){header{padding:12px 14px}main{padding:18px 12px}.row{flex-wrap:wrap}.actions button{flex:1;justify-content:center;min-height:56px}}
 </style>
 </head>
 <body>
@@ -116,16 +96,30 @@ td{padding:10px 13px;vertical-align:middle}
 </header>
 
 <main>
-
-  <div class="api-row">
+  <div class="row">
     <label>API Key</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." data-testid="api-key" />
-    <button class="btn-s" onclick="testKey()" data-testid="btn-test">Test</button>
+    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+    <button class="bs" onclick="testKey()" style="white-space:nowrap">Test</button>
+  </div>
+  <div class="row">
+    <label>Script URL</label>
+    <input type="text" id="webhookUrl" placeholder="https://script.google.com/macros/s/..." oninput="saveConfig()" />
+    <button class="bs" onclick="testSheets()" style="white-space:nowrap">Test</button>
+  </div>
+  <div class="row" style="margin-bottom:20px">
+    <label>Sheet ID</label>
+    <input type="text" id="sheetId" placeholder="Paste Sheet ID from URL" oninput="saveConfig()" />
+    <a id="sheetLink" href="#" target="_blank" class="bs" style="text-decoration:none;white-space:nowrap;display:none">Open &#8599;</a>
   </div>
 
-  <div class="err-box" id="errBox"></div>
+  <div class="sbar">
+    <div class="sdot" id="sdot"></div>
+    <span id="stxt">Enter Script URL and Sheet ID above to enable auto-sync</span>
+  </div>
 
-  <div class="drop" id="drop" data-testid="dropzone">
+  <div class="eb" id="eb"></div>
+
+  <div class="drop" id="drop">
     <input type="file" accept="image/*" multiple onchange="addFiles(this.files)" id="fileInput" />
     <div class="drop-ico">&#128230;</div>
     <h3>Drop product images here</h3>
@@ -134,292 +128,335 @@ td{padding:10px 13px;vertical-align:middle}
 
   <div class="queue" id="queue"></div>
 
-  <div class="prog-wrap" id="progWrap">
-    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
-    <div class="prog-label" id="progLabel">0 / 0</div>
+  <div class="pw" id="pw">
+    <div class="pb"><div class="pf" id="pf"></div></div>
+    <div class="pl" id="pl">0 / 0</div>
   </div>
 
   <div class="actions">
-    <button class="btn-p" onclick="runAll()" id="btnRun" disabled data-testid="btn-run">&#9654; Extract SKUs</button>
-    <button class="btn-s" onclick="exportCSV()" id="btnExport" disabled data-testid="btn-export">&#8595; Export CSV</button>
-    <button class="btn-s" onclick="clearAll()" data-testid="btn-clear">&#10005; Clear</button>
+    <button class="bp" onclick="runAll()" id="btnRun" disabled>&#9654; Extract SKUs</button>
+    <button class="bg" onclick="syncSheets()" id="btnSync" disabled>&#8679; Sync to Sheets</button>
+    <button class="bs" onclick="exportCSV()" id="btnExport" disabled>&#8595; CSV</button>
+    <button class="bs" onclick="clearAll()">&#10005; Clear</button>
+  </div>
+
+  <div class="ss" id="ss">
+    <span style="color:var(--green)">&#10003;</span>
+    <span id="ssTxt"></span>
+    <a id="ssLink" href="#" target="_blank" style="color:var(--green);margin-left:auto;font-size:11px;text-decoration:none">Open Sheet &#8599;</a>
   </div>
 
   <div id="resSection" style="display:none">
-    <div class="res-hd">
+    <div class="rh">
       <h2>Results</h2>
-      <button class="btn-s" onclick="copyAllSkus()" style="padding:6px 12px;font-size:11px">Copy all SKUs</button>
+      <button class="bs" onclick="copyAll()" style="padding:6px 12px;font-size:11px">Copy all SKUs</button>
     </div>
-    <div class="table-wrap">
+    <div class="tw">
       <table>
-        <thead><tr><th>Image</th><th>SKUs Found</th><th>Status</th><th>Notes</th></tr></thead>
+        <thead><tr><th>Image</th><th>SKUs</th><th>Status</th><th>Notes</th><th>Synced</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
   </div>
-
 </main>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var items = [];
-var running = false;
+var items=[], running=false, syncing=false;
 
-// ─── Drag & Drop ─────────────────────────────────────────────────
-var drop = document.getElementById('drop');
-drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('over'); });
-drop.addEventListener('dragleave', function(){ drop.classList.remove('over'); });
-drop.addEventListener('drop', function(e){ e.preventDefault(); drop.classList.remove('over'); addFiles(e.dataTransfer.files); });
+function saveConfig(){
+  try{localStorage.setItem('sw',document.getElementById('webhookUrl').value);localStorage.setItem('ss2',document.getElementById('sheetId').value);}catch(e){}
+  updateSheetLink(); syncButtons();
+}
+function loadConfig(){
+  try{
+    var w=localStorage.getItem('sw'), s=localStorage.getItem('ss2');
+    if(w) document.getElementById('webhookUrl').value=w;
+    if(s) document.getElementById('sheetId').value=s;
+  }catch(e){}
+  updateSheetLink();
+}
+function updateSheetLink(){
+  var sid=document.getElementById('sheetId').value.trim();
+  var a=document.getElementById('sheetLink'), b=document.getElementById('ssLink');
+  if(sid){var u='https://docs.google.com/spreadsheets/d/'+sid; a.href=u; a.style.display='inline-flex'; b.href=u;}
+  else a.style.display='none';
+}
 
-function addFiles(files) {
-  Array.from(files).forEach(function(file) {
-    if (!file.type.startsWith('image/')) return;
-    var id = 'img_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    var url = URL.createObjectURL(file);
-    items.push({ id:id, file:file, url:url, status:'idle', skus:[], note:'' });
+var drop=document.getElementById('drop');
+drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('over');});
+drop.addEventListener('dragleave',function(){drop.classList.remove('over');});
+drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('over');addFiles(e.dataTransfer.files);});
+
+function addFiles(files){
+  Array.from(files).forEach(function(f){
+    if(!f.type.startsWith('image/')) return;
+    var id='i'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    items.push({id:id,file:f,url:URL.createObjectURL(f),status:'idle',skus:[],note:'',synced:false});
   });
   renderQueue(); renderTable(); syncButtons();
 }
 
-function dotClass(s){ return {idle:'idle',processing:'spin',done:'ok',error:'err'}[s]||'idle'; }
+function dc(s){return {idle:'idle',processing:'spin',done:'ok',error:'err'}[s]||'idle';}
 
-function renderQueue() {
-  var q = document.getElementById('queue');
-  if (!items.length) { q.innerHTML=''; return; }
-  q.innerHTML = items.map(function(it){
-    return '<div class="q-item" id="qi_'+it.id+'">'+
+function renderQueue(){
+  var q=document.getElementById('queue');
+  if(!items.length){q.innerHTML='';return;}
+  q.innerHTML=items.map(function(it){
+    return '<div class="qi" id="qi_'+it.id+'">'+
       '<img src="'+it.url+'" loading="lazy"/>'+
-      '<div class="q-foot"><span class="q-name">'+it.file.name+'</span>'+
-      '<span class="dot '+dotClass(it.status)+'" id="dot_'+it.id+'"></span></div>'+
-      '<button class="q-del" onclick="removeItem(\''+it.id+'\')">&#10005;</button>'+
-    '</div>';
+      '<div class="qf"><span class="qn">'+it.file.name+'</span>'+
+      '<span class="dot '+dc(it.status)+'" id="dot_'+it.id+'"></span></div>'+
+      '<button class="qdel" onclick="removeItem(\''+it.id+'\')">&#10005;</button></div>';
   }).join('');
 }
 
-function removeItem(id) {
-  var it = items.find(function(x){ return x.id===id; });
-  if (it) URL.revokeObjectURL(it.url);
-  items = items.filter(function(x){ return x.id!==id; });
+function removeItem(id){
+  var it=items.find(function(x){return x.id===id;});
+  if(it) URL.revokeObjectURL(it.url);
+  items=items.filter(function(x){return x.id!==id;});
   renderQueue(); renderTable(); syncButtons();
 }
 
-function clearAll() {
-  items.forEach(function(it){ URL.revokeObjectURL(it.url); });
-  items = [];
-  document.getElementById('fileInput').value = '';
-  document.getElementById('progWrap').style.display = 'none';
-  document.getElementById('resSection').style.display = 'none';
-  document.getElementById('errBox').style.display = 'none';
-  renderQueue(); renderTable(); syncButtons(); updateChips();
+function clearAll(){
+  items.forEach(function(it){URL.revokeObjectURL(it.url);});
+  items=[];
+  document.getElementById('fileInput').value='';
+  document.getElementById('pw').style.display='none';
+  document.getElementById('resSection').style.display='none';
+  document.getElementById('eb').style.display='none';
+  document.getElementById('ss').style.display='none';
+  renderQueue(); renderTable(); syncButtons(); chips();
 }
 
-function renderTable() {
-  var sec = document.getElementById('resSection');
-  var tb  = document.getElementById('tbody');
-  if (!items.length) { sec.style.display='none'; return; }
+function renderTable(){
+  var sec=document.getElementById('resSection'), tb=document.getElementById('tbody');
+  if(!items.length){sec.style.display='none';return;}
   sec.style.display='block';
-  tb.innerHTML = items.map(function(it){
+  tb.innerHTML=items.map(function(it){
     return '<tr id="tr_'+it.id+'">'+
-      '<td><img class="thumb" src="'+it.url+'"/><div class="fname" title="'+it.file.name+'">'+it.file.name+'</div></td>'+
-      '<td>'+renderSkus(it)+'</td>'+
-      '<td>'+renderStatus(it)+'</td>'+
+      '<td><img class="th" src="'+it.url+'"/><div class="fn" title="'+it.file.name+'">'+it.file.name+'</div></td>'+
+      '<td>'+rSkus(it)+'</td>'+
+      '<td>'+rStatus(it)+'</td>'+
       '<td><div class="note">'+(it.note||'')+'</div></td>'+
-    '</tr>';
+      '<td>'+rSynced(it)+'</td></tr>';
   }).join('');
 }
 
-function renderSkus(it) {
-  if (!it.skus.length) return '<span class="pill-none">—</span>';
-  return '<div class="sku-pills">'+it.skus.map(function(s){
+function rSkus(it){
+  if(!it.skus.length) return '<span class="pnone">—</span>';
+  return '<div class="pills">'+it.skus.map(function(s){
     return '<span class="pill" onclick="copyText(\''+s+'\')" title="Click to copy">'+s+'</span>';
   }).join('')+'</div>';
 }
-
-function renderStatus(it) {
-  var map={idle:['sb-pend','Pending'],processing:['sb-spin','Reading…'],done:['sb-ok','Done'],error:['sb-err','Error']};
-  var d=map[it.status]||map.idle;
-  return '<span class="status-badge '+d[0]+'">'+d[1]+'</span>';
+function rStatus(it){
+  var m={idle:['sp','Pending'],processing:['sq','Reading…'],done:['so','Done'],error:['se','Error']};
+  var d=m[it.status]||m.idle;
+  return '<span class="sb '+d[0]+'">'+d[1]+'</span>';
+}
+function rSynced(it){
+  return it.synced
+    ? '<span style="font-size:10px;color:var(--green)">&#10003; Synced</span>'
+    : '<span style="font-size:10px;color:var(--t3)">—</span>';
 }
 
-function updateRow(id) {
-  var it = items.find(function(x){ return x.id===id; });
-  if (!it) return;
-  var tr = document.getElementById('tr_'+id);
-  if (tr) {
-    tr.children[1].innerHTML = renderSkus(it);
-    tr.children[2].innerHTML = renderStatus(it);
-    tr.children[3].innerHTML = '<div class="note">'+(it.note||'')+'</div>';
+function updateRow(id){
+  var it=items.find(function(x){return x.id===id;});
+  if(!it) return;
+  var tr=document.getElementById('tr_'+id);
+  if(tr){
+    tr.children[1].innerHTML=rSkus(it);
+    tr.children[2].innerHTML=rStatus(it);
+    tr.children[3].innerHTML='<div class="note">'+(it.note||'')+'</div>';
+    tr.children[4].innerHTML=rSynced(it);
   }
-  var dot = document.getElementById('dot_'+id);
-  if (dot) dot.className = 'dot '+dotClass(it.status);
+  var dot=document.getElementById('dot_'+id);
+  if(dot) dot.className='dot '+dc(it.status);
 }
 
-function syncButtons() {
-  var hasPending = items.some(function(x){ return x.status==='idle'; });
-  var hasDone    = items.some(function(x){ return x.status==='done'; });
-  document.getElementById('btnRun').disabled    = !items.length || !hasPending || running;
-  document.getElementById('btnExport').disabled = !hasDone;
+function syncButtons(){
+  var hasPend=items.some(function(x){return x.status==='idle';});
+  var hasDone=items.some(function(x){return x.status==='done';});
+  var hasNew=items.some(function(x){return x.status==='done'&&!x.synced;});
+  var hasW=!!document.getElementById('webhookUrl').value.trim();
+  var hasS=!!document.getElementById('sheetId').value.trim();
+  document.getElementById('btnRun').disabled=!items.length||!hasPend||running;
+  document.getElementById('btnExport').disabled=!hasDone;
+  document.getElementById('btnSync').disabled=!hasNew||syncing||!hasW||!hasS;
 }
 
-function updateChips() {
-  document.getElementById('cntDone').textContent = items.filter(function(x){ return x.status==='done'; }).length;
-  document.getElementById('cntSku').textContent  = items.reduce(function(a,x){ return a+x.skus.length; },0);
+function chips(){
+  document.getElementById('cntDone').textContent=items.filter(function(x){return x.status==='done';}).length;
+  document.getElementById('cntSku').textContent=items.reduce(function(a,x){return a+x.skus.length;},0);
 }
 
-// ─── API headers — THE FIX ────────────────────────────────────────
-function apiHeaders(key) {
-  return {
-    'Content-Type': 'application/json',
-    'x-api-key': key,
-    'anthropic-version': '2023-06-01',
-    'anthropic-dangerous-direct-browser-access': 'true'
+function hdrs(key){
+  return{
+    'Content-Type':'application/json',
+    'x-api-key':key,
+    'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
   };
 }
 
-// ─── Test Key ────────────────────────────────────────────────────
-async function testKey() {
-  var key = document.getElementById('apiKey').value.trim();
-  if (!key) { toast('Enter API key first'); return; }
-  toast('Testing…');
-  hideErr();
-  try {
-    var r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: apiHeaders(key),
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:10, messages:[{role:'user',content:'hi'}] })
+async function testKey(){
+  var key=document.getElementById('apiKey').value.trim();
+  if(!key){toast('Enter API key first');return;}
+  toast('Testing…'); hideErr();
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:hdrs(key),
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'hi'}]})
     });
-    var d = await r.json();
-    if (d.content) toast('Key valid');
-    else showErr('Key error: ' + (d.error&&d.error.message||'check key'));
-  } catch(e) {
-    showErr('Network error: ' + e.message + ' — make sure you opened via http://localhost:8080');
-  }
+    var d=await r.json();
+    if(d.content) toast('API key valid');
+    else showErr('Key error: '+(d.error&&d.error.message||'invalid key'));
+  }catch(e){showErr('Network error: '+e.message);}
 }
 
-// ─── Run All ─────────────────────────────────────────────────────
-async function runAll() {
-  var key = document.getElementById('apiKey').value.trim();
-  if (!key) { toast('Enter your Anthropic API key first'); return; }
-  var pending = items.filter(function(x){ return x.status==='idle'; });
-  if (!pending.length) return;
+async function testSheets(){
+  var url=document.getElementById('webhookUrl').value.trim();
+  var sid=document.getElementById('sheetId').value.trim();
+  if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
+  setSt('spin','Testing connection…');
+  try{
+    var r=await fetch(url,{
+      method:'POST',
+      body:JSON.stringify({sheetId:sid,rows:[{filename:'__connection_test__',skus:'OK',note:'Test row',status:'test'}]})
+    });
+    var d=await r.json();
+    if(d.success){setSt('on','Connected — test row written to sheet'); saveConfig();}
+    else setSt('err','Error: '+(d.error||'unknown'));
+  }catch(e){setSt('err','Failed: '+e.message);}
+  syncButtons();
+}
 
-  running = true; hideErr(); syncButtons();
+function setSt(state,msg){
+  var dot=document.getElementById('sdot'), txt=document.getElementById('stxt');
+  dot.className='sdot'+(state==='on'?' on':state==='err'?' err':state==='spin'?' spin':'');
+  txt.textContent=msg;
+}
 
-  var pw = document.getElementById('progWrap');
-  var pf = document.getElementById('progFill');
-  var pl = document.getElementById('progLabel');
-  pw.style.display = 'block';
-
-  var done = 0;
-  for (var i = 0; i < pending.length; i++) {
-    var it = pending[i];
-    it.status = 'processing';
-    updateRow(it.id);
-
-    try {
-      var b64  = await toBase64(it.file);
-      var mime = it.file.type || 'image/jpeg';
-
-      var res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: apiHeaders(key),
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 400,
-          messages: [{
-            role: 'user',
-            content: [
-              { type:'image', source:{ type:'base64', media_type:mime, data:b64 } },
-              { type:'text', text:'Analyze this furniture product image and extract ALL SKU or product code numbers.\n\nSKUs typically appear as:\n- 5-7 digit numbers in a dark pill/badge at the bottom center or corners\n- Small numeric codes near price tags or overlays\n- Examples: 161261 (bottom badge), 167029 (top-left corner)\n\nReturn ONLY valid JSON, no markdown:\n{"skus":["123456"],"note":"location description"}\n\nIf none found: {"skus":[],"note":"no SKU visible"}' }
-            ]
-          }]
+async function runAll(){
+  var key=document.getElementById('apiKey').value.trim();
+  if(!key){toast('Enter API key first');return;}
+  var pending=items.filter(function(x){return x.status==='idle';});
+  if(!pending.length) return;
+  running=true; hideErr(); syncButtons();
+  document.getElementById('pw').style.display='block';
+  var done=0;
+  for(var i=0;i<pending.length;i++){
+    var it=pending[i];
+    it.status='processing'; updateRow(it.id);
+    try{
+      var b64=await toB64(it.file);
+      var mime=it.file.type||'image/jpeg';
+      var res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',headers:hdrs(key),
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',max_tokens:400,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:mime,data:b64}},
+            {type:'text',text:'Extract ALL SKU or product code numbers from this furniture product image.\n\nSKUs appear as:\n- 5-7 digit numbers in a dark badge at bottom center or corners\n- Numeric codes near price tags\n- Examples: 161261 (bottom badge), 167029 (top-left)\n\nReturn ONLY valid JSON:\n{"skus":["123456"],"note":"where you found it"}\n\nIf none: {"skus":[],"note":"no SKU visible"}'}
+          ]}]
         })
       });
-
-      if (!res.ok) {
-        var err = await res.json();
-        throw new Error((err.error&&err.error.message)||'HTTP '+res.status);
-      }
-
-      var data   = await res.json();
-      var raw    = (data.content&&data.content[0]&&data.content[0].text)||'';
-      var clean  = raw.replace(/```json|```/g,'').trim();
+      if(!res.ok){var er=await res.json();throw new Error((er.error&&er.error.message)||'HTTP '+res.status);}
+      var data=await res.json();
+      var raw=(data.content&&data.content[0]&&data.content[0].text)||'';
       var parsed;
-      try { parsed = JSON.parse(clean); }
-      catch(pe) { parsed = { skus:[], note:'Parse error: '+raw.slice(0,50) }; }
-
-      it.skus   = (parsed.skus||[]).map(function(s){ return String(s).trim(); }).filter(Boolean);
-      it.note   = parsed.note || '';
-      it.status = 'done';
-
-    } catch(e) {
-      it.status = 'error';
-      it.note   = (e.message||'Unknown error').slice(0,100);
+      try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+      catch(pe){parsed={skus:[],note:'Parse error'};}
+      it.skus=(parsed.skus||[]).map(function(s){return String(s).trim();}).filter(Boolean);
+      it.note=parsed.note||'';
+      it.status='done';
+    }catch(e){
+      it.status='error';
+      it.note=(e.message||'error').slice(0,100);
     }
-
     done++;
-    pf.style.width  = (done/pending.length*100)+'%';
-    pl.textContent  = done+' / '+pending.length;
-    updateRow(it.id);
-    updateChips();
+    document.getElementById('pf').style.width=(done/pending.length*100)+'%';
+    document.getElementById('pl').textContent=done+' / '+pending.length;
+    updateRow(it.id); chips();
   }
-
-  running = false;
-  syncButtons();
+  running=false; syncButtons();
   toast('Done — '+done+' image'+(done>1?'s':'')+' processed');
+  var hasW=!!document.getElementById('webhookUrl').value.trim();
+  var hasS=!!document.getElementById('sheetId').value.trim();
+  if(hasW&&hasS) setTimeout(syncSheets,600);
 }
 
-// ─── Utils ───────────────────────────────────────────────────────
-function toBase64(file) {
+async function syncSheets(){
+  var url=document.getElementById('webhookUrl').value.trim();
+  var sid=document.getElementById('sheetId').value.trim();
+  if(!url||!sid){toast('Configure Script URL and Sheet ID first');return;}
+  var toSync=items.filter(function(x){return x.status==='done'&&!x.synced;});
+  if(!toSync.length){toast('Nothing new to sync');return;}
+  syncing=true; syncButtons();
+  setSt('spin','Syncing '+toSync.length+' row'+(toSync.length>1?'s':'')+'…');
+  try{
+    var rows=toSync.map(function(it){
+      return{filename:it.file.name,skus:it.skus.join(' | ')||'none',note:it.note||'',status:it.status};
+    });
+    var res=await fetch(url,{method:'POST',body:JSON.stringify({sheetId:sid,rows:rows})});
+    var d=await res.json();
+    if(d.success){
+      toSync.forEach(function(it){it.synced=true;updateRow(it.id);});
+      setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
+      document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
+      var ss=document.getElementById('ss');
+      ss.style.display='flex';
+      toast('Synced to Google Sheets');
+    }else{
+      setSt('err','Sync error: '+(d.error||'unknown'));
+      toast('Sync failed');
+    }
+  }catch(e){setSt('err','Sync failed: '+e.message);toast('Sync failed');}
+  syncing=false; syncButtons();
+}
+
+function toB64(file){
   return new Promise(function(res,rej){
-    var r = new FileReader();
-    r.onload  = function(){ res(r.result.split(',')[1]); };
-    r.onerror = function(){ rej(new Error('File read failed')); };
+    var r=new FileReader();
+    r.onload=function(){res(r.result.split(',')[1]);};
+    r.onerror=function(){rej(new Error('Read failed'));};
     r.readAsDataURL(file);
   });
 }
 
-function exportCSV() {
-  var rows = [['Filename','SKUs','Status','Notes']];
-  items.forEach(function(it){
-    rows.push([it.file.name, it.skus.join(' | '), it.status, it.note]);
-  });
-  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download = 'skus_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
+function exportCSV(){
+  var rows=[['Filename','SKUs','Status','Notes','Synced']];
+  items.forEach(function(it){rows.push([it.file.name,it.skus.join(' | '),it.status,it.note,it.synced?'Yes':'No']);});
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='skus_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
   toast('CSV exported');
 }
 
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(function(){ toast('Copied: '+text); });
+function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('Copied: '+t);});}
+
+function copyAll(){
+  var seen={},all=[];
+  items.forEach(function(it){it.skus.forEach(function(s){if(!seen[s]){seen[s]=true;all.push(s);}});});
+  if(!all.length){toast('No SKUs yet');return;}
+  navigator.clipboard.writeText(all.join('\n')).then(function(){toast('Copied '+all.length+' SKUs');});
 }
 
-function copyAllSkus() {
-  var seen={}, all=[];
-  items.forEach(function(it){ it.skus.forEach(function(s){ if(!seen[s]){seen[s]=true;all.push(s);} }); });
-  if (!all.length) { toast('No SKUs yet'); return; }
-  navigator.clipboard.writeText(all.join('\n')).then(function(){ toast('Copied '+all.length+' SKUs'); });
+function showErr(m){var b=document.getElementById('eb');b.textContent=m;b.style.display='block';}
+function hideErr(){document.getElementById('eb').style.display='none';}
+
+var tt;
+function toast(m){
+  var el=document.getElementById('toast');
+  el.textContent=m; el.classList.add('show');
+  clearTimeout(tt);
+  tt=setTimeout(function(){el.classList.remove('show');},2400);
 }
 
-function showErr(msg) {
-  var b = document.getElementById('errBox');
-  b.textContent = msg;
-  b.style.display = 'block';
-}
-function hideErr() { document.getElementById('errBox').style.display='none'; }
-
-var toastTimer;
-function toast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
-}
+loadConfig();
 </script>
 </body>
 </html>

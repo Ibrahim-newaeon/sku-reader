@@ -348,6 +348,8 @@ async function testSheets(){
     if(d.success||d.added){setSt('on','Connected — test row written to sheet');saveConfig();}
     else setSt('err','Error: '+(d.error||'unknown'));
   }catch(e){setSt('err','Failed: '+e.message);}
+  syncButtons();
+}
 
 function setSt(state,msg){
   var dot=document.getElementById('sdot'), txt=document.getElementById('stxt');

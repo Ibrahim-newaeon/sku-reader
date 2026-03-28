@@ -315,11 +315,8 @@ function hdrs(key){
 // Setting Content-Type: application/json triggers CORS preflight which GAS blocks
 // Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
 function gasPost(url, payload){
-  return fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-    // NO headers — this avoids CORS preflight
-  });
+  var encoded = encodeURIComponent(JSON.stringify(payload));
+  return fetch(url + '?data=' + encoded);
 }
 
 async function testKey(){

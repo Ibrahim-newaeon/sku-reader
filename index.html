@@ -78,7 +78,7 @@ td{padding:10px 13px;vertical-align:middle}
 .so{background:rgba(76,175,80,.1);color:var(--green);border:1px solid rgba(76,175,80,.25)}
 .se{background:rgba(226,75,74,.1);color:var(--red);border:1px solid rgba(226,75,74,.25)}
 .note{font-size:11px;color:var(--t3);max-width:160px;line-height:1.5}
-.eb{background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--red);display:none}
+.eb{background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--red);display:none;word-break:break-all}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--s2);border:1px solid var(--bd2);padding:9px 16px;border-radius:8px;font-size:12px;color:var(--gold);pointer-events:none;opacity:0;transform:translateY(6px);transition:all .2s;z-index:200}
 .toast.show{opacity:1;transform:translateY(0)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
@@ -166,9 +166,13 @@ td{padding:10px 13px;vertical-align:middle}
 var items=[], running=false, syncing=false;
 
 function saveConfig(){
-  try{localStorage.setItem('sw',document.getElementById('webhookUrl').value);localStorage.setItem('ss2',document.getElementById('sheetId').value);}catch(e){}
+  try{
+    localStorage.setItem('sw', document.getElementById('webhookUrl').value);
+    localStorage.setItem('ss2', document.getElementById('sheetId').value);
+  }catch(e){}
   updateSheetLink(); syncButtons();
 }
+
 function loadConfig(){
   try{
     var w=localStorage.getItem('sw'), s=localStorage.getItem('ss2');
@@ -177,11 +181,16 @@ function loadConfig(){
   }catch(e){}
   updateSheetLink();
 }
+
 function updateSheetLink(){
   var sid=document.getElementById('sheetId').value.trim();
   var a=document.getElementById('sheetLink'), b=document.getElementById('ssLink');
-  if(sid){var u='https://docs.google.com/spreadsheets/d/'+sid; a.href=u; a.style.display='inline-flex'; b.href=u;}
-  else a.style.display='none';
+  if(sid){
+    var u='https://docs.google.com/spreadsheets/d/'+sid;
+    a.href=u; a.style.display='inline-flex'; b.href=u;
+  } else {
+    a.style.display='none';
+  }
 }
 
 var drop=document.getElementById('drop');
@@ -198,7 +207,7 @@ function addFiles(files){
   renderQueue(); renderTable(); syncButtons();
 }
 
-function dc(s){return {idle:'idle',processing:'spin',done:'ok',error:'err'}[s]||'idle';}
+function dc(s){return{idle:'idle',processing:'spin',done:'ok',error:'err'}[s]||'idle';}
 
 function renderQueue(){
   var q=document.getElementById('queue');
@@ -250,11 +259,13 @@ function rSkus(it){
     return '<span class="pill" onclick="copyText(\''+s+'\')" title="Click to copy">'+s+'</span>';
   }).join('')+'</div>';
 }
+
 function rStatus(it){
   var m={idle:['sp','Pending'],processing:['sq','Reading…'],done:['so','Done'],error:['se','Error']};
   var d=m[it.status]||m.idle;
   return '<span class="sb '+d[0]+'">'+d[1]+'</span>';
 }
+
 function rSynced(it){
   return it.synced
     ? '<span style="font-size:10px;color:var(--green)">&#10003; Synced</span>'
@@ -300,18 +311,29 @@ function hdrs(key){
   };
 }
 
+// ── CRITICAL: Google Apps Script fetch must NOT set Content-Type
+// Setting Content-Type: application/json triggers CORS preflight which GAS blocks
+// Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
+function gasPost(url, payload){
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+    // NO headers — this avoids CORS preflight
+  });
+}
+
 async function testKey(){
   var key=document.getElementById('apiKey').value.trim();
   if(!key){toast('Enter API key first');return;}
   toast('Testing…'); hideErr();
   try{
     var r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:hdrs(key),
+      method:'POST', headers:hdrs(key),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'hi'}]})
     });
     var d=await r.json();
     if(d.content) toast('API key valid');
-    else showErr('Key error: '+(d.error&&d.error.message||'invalid key'));
+    else showErr('Key error: '+(d.error&&d.error.message||'invalid'));
   }catch(e){showErr('Network error: '+e.message);}
 }
 
@@ -321,14 +343,22 @@ async function testSheets(){
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
   try{
-    var r=await fetch(url,{
-      method:'POST',
-      body:JSON.stringify({sheetId:sid,rows:[{filename:'__connection_test__',skus:'OK',note:'Test row',status:'test'}]})
+    var r=await gasPost(url,{
+      sheetId: sid,
+      rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]
     });
-    var d=await r.json();
-    if(d.success){setSt('on','Connected — test row written to sheet'); saveConfig();}
-    else setSt('err','Error: '+(d.error||'unknown'));
-  }catch(e){setSt('err','Failed: '+e.message);}
+    var text=await r.text();
+    var d;
+    try{d=JSON.parse(text);}catch(e){d={success:false,error:'Bad response: '+text.slice(0,100)};}
+    if(d.success){
+      setSt('on','Connected — test row written to sheet');
+      saveConfig();
+    } else {
+      setSt('err','Error: '+(d.error||'unknown'));
+    }
+  }catch(e){
+    setSt('err','Failed: '+e.message);
+  }
   syncButtons();
 }
 
@@ -353,9 +383,9 @@ async function runAll(){
       var b64=await toB64(it.file);
       var mime=it.file.type||'image/jpeg';
       var res=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',headers:hdrs(key),
+        method:'POST', headers:hdrs(key),
         body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',max_tokens:400,
+          model:'claude-sonnet-4-20250514', max_tokens:400,
           messages:[{role:'user',content:[
             {type:'image',source:{type:'base64',media_type:mime,data:b64}},
             {type:'text',text:'Extract ALL SKU or product code numbers from this furniture product image.\n\nSKUs appear as:\n- 5-7 digit numbers in a dark badge at bottom center or corners\n- Numeric codes near price tags\n- Examples: 161261 (bottom badge), 167029 (top-left)\n\nReturn ONLY valid JSON:\n{"skus":["123456"],"note":"where you found it"}\n\nIf none: {"skus":[],"note":"no SKU visible"}'}
@@ -384,7 +414,7 @@ async function runAll(){
   toast('Done — '+done+' image'+(done>1?'s':'')+' processed');
   var hasW=!!document.getElementById('webhookUrl').value.trim();
   var hasS=!!document.getElementById('sheetId').value.trim();
-  if(hasW&&hasS) setTimeout(syncSheets,600);
+  if(hasW&&hasS) setTimeout(syncSheets, 600);
 }
 
 async function syncSheets(){
@@ -397,22 +427,27 @@ async function syncSheets(){
   setSt('spin','Syncing '+toSync.length+' row'+(toSync.length>1?'s':'')+'…');
   try{
     var rows=toSync.map(function(it){
-      return{filename:it.file.name,skus:it.skus.join(' | ')||'none',note:it.note||'',status:it.status};
+      return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
     });
-    var res=await fetch(url,{method:'POST',body:JSON.stringify({sheetId:sid,rows:rows})});
-    var d=await res.json();
+    var res=await gasPost(url,{sheetId:sid, rows:rows});
+    var text=await res.text();
+    var d;
+    try{d=JSON.parse(text);}catch(e){d={success:false,error:'Bad response: '+text.slice(0,100)};}
     if(d.success){
-      toSync.forEach(function(it){it.synced=true;updateRow(it.id);});
+      toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
       setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
       document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
       var ss=document.getElementById('ss');
       ss.style.display='flex';
       toast('Synced to Google Sheets');
     }else{
-      setSt('err','Sync error: '+(d.error||'unknown'));
-      toast('Sync failed');
+      setSt('err','Sync error: '+(d.error||JSON.stringify(d)));
+      toast('Sync failed — see status bar');
     }
-  }catch(e){setSt('err','Sync failed: '+e.message);toast('Sync failed');}
+  }catch(e){
+    setSt('err','Sync failed: '+e.message);
+    toast('Sync failed');
+  }
   syncing=false; syncButtons();
 }
 
@@ -439,7 +474,7 @@ function exportCSV(){
 function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('Copied: '+t);});}
 
 function copyAll(){
-  var seen={},all=[];
+  var seen={}, all=[];
   items.forEach(function(it){it.skus.forEach(function(s){if(!seen[s]){seen[s]=true;all.push(s);}});});
   if(!all.length){toast('No SKUs yet');return;}
   navigator.clipboard.writeText(all.join('\n')).then(function(){toast('Copied '+all.length+' SKUs');});

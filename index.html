@@ -344,19 +344,12 @@ async function testSheets(){
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
   try{
-  var rows=toSync.map(function(it){
-    return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
-  });
-  await gasPost(url,{sheetId:sid, rows:rows});
-  toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
-  setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
-  document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
-  document.getElementById('ss').style.display='flex';
-  toast('Synced — check your Google Sheet');
-}catch(e){
-  setSt('err','Sync failed: '+e.message);
-  toast('Sync failed');
-}
+    await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
+    setSt('on','Connected — check your sheet for the test row');
+    saveConfig();
+  }catch(e){
+    setSt('err','Failed: '+e.message);
+  }
   syncButtons();
 }
 

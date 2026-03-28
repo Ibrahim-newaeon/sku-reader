@@ -314,10 +314,12 @@ function hdrs(key){
 // ── CRITICAL: Google Apps Script fetch must NOT set Content-Type
 // Setting Content-Type: application/json triggers CORS preflight which GAS blocks
 // Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
-function gasPost(url, payload) {
+function gasPost(url, payload){
+  return fetch(url, {
     method: 'POST',
     mode: 'no-cors',
     body: JSON.stringify(payload)
+    // NO headers — this avoids CORS preflight
   });
 }
 
@@ -342,27 +344,19 @@ async function testSheets(){
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
   try{
-  await gasPost(url,{
-    sheetId:sid,
-    rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]
+  var rows=toSync.map(function(it){
+    return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
   });
-  setSt('on','Connected — check your sheet for the test row');
-  saveConfig();
+  await gasPost(url,{sheetId:sid, rows:rows});
+  toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
+  setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
+  document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
+  document.getElementById('ss').style.display='flex';
+  toast('Synced — check your Google Sheet');
 }catch(e){
-  setSt('err','Failed: '+e.message);
+  setSt('err','Sync failed: '+e.message);
+  toast('Sync failed');
 }
-    var text=await r.text();
-    var d;
-    try{d=JSON.parse(text);}catch(e){d={success:false,error:'Bad response: '+text.slice(0,100)};}
-    if(d.success){
-      setSt('on','Connected — test row written to sheet');
-      saveConfig();
-    } else {
-      setSt('err','Error: '+(d.error||'unknown'));
-    }
-  }catch(e){
-    setSt('err','Failed: '+e.message);
-  }
   syncButtons();
 }
 
@@ -429,20 +423,20 @@ async function syncSheets(){
   if(!toSync.length){toast('Nothing new to sync');return;}
   syncing=true; syncButtons();
   setSt('spin','Syncing '+toSync.length+' row'+(toSync.length>1?'s':'')+'…');
- try{
-  var rows=toSync.map(function(it){
-    return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
-  });
-  await gasPost(url,{sheetId:sid, rows:rows});
-  toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
-  setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
-  document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
-  document.getElementById('ss').style.display='flex';
-  toast('Synced — check your Google Sheet');
-}catch(e){
-  setSt('err','Sync failed: '+e.message);
-  toast('Sync failed');
-}
+  try{
+    var rows=toSync.map(function(it){
+      return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
+    });
+    await gasPost(url,{sheetId:sid, rows:rows});
+    toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
+    setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
+    document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
+    document.getElementById('ss').style.display='flex';
+    toast('Synced — check your Google Sheet');
+  }catch(e){
+    setSt('err','Sync failed: '+e.message);
+    toast('Sync failed');
+  }
   syncing=false; syncButtons();
 }
 

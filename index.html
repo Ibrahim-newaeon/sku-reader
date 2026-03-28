@@ -342,15 +342,12 @@ async function testSheets(){
   var sid=document.getElementById('sheetId').value.trim();
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
-  try{
-    await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
-    setSt('on','Connected — check your sheet for the test row');
-    saveConfig();
-  }catch(e){
-    setSt('err','Failed: '+e.message);
-  }
-  syncButtons();
-}
+   try{
+    var r=await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
+    var d=await r.json();
+    if(d.success||d.added){setSt('on','Connected — test row written to sheet');saveConfig();}
+    else setSt('err','Error: '+(d.error||'unknown'));
+  }catch(e){setSt('err','Failed: '+e.message);}
 
 function setSt(state,msg){
   var dot=document.getElementById('sdot'), txt=document.getElementById('stxt');
@@ -417,18 +414,21 @@ async function syncSheets(){
   setSt('spin','Syncing '+toSync.length+' row'+(toSync.length>1?'s':'')+'…');
   try{
     var rows=toSync.map(function(it){
-      return{filename:it.file.name, skus:it.skus.join(' | ')||'none', note:it.note||'', status:it.status};
+      return{filename:it.file.name,skus:it.skus.join(' | ')||'none',note:it.note||'',status:it.status};
     });
-    await gasPost(url,{sheetId:sid, rows:rows});
-    toSync.forEach(function(it){it.synced=true; updateRow(it.id);});
-    setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
-    document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
-    document.getElementById('ss').style.display='flex';
-    toast('Synced — check your Google Sheet');
-  }catch(e){
-    setSt('err','Sync failed: '+e.message);
-    toast('Sync failed');
-  }
+    var r=await gasPost(url,{sheetId:sid,rows:rows});
+    var d=await r.json();
+    if(d.success||d.added){
+      toSync.forEach(function(it){it.synced=true;updateRow(it.id);});
+      setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());
+      document.getElementById('ssTxt').textContent=toSync.length+' row'+(toSync.length>1?'s':'')+' added to Google Sheets';
+      document.getElementById('ss').style.display='flex';
+      toast('Synced to Google Sheets');
+    }else{
+      setSt('err','Sync error: '+(d.error||'unknown'));
+      toast('Sync failed');
+    }
+  }catch(e){setSt('err','Sync failed: '+e.message);toast('Sync failed');}
   syncing=false; syncButtons();
 }
 function toB64(file){

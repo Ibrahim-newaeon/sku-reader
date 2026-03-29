@@ -325,10 +325,7 @@ function gasPost(url, payload){
     };
     var s=document.createElement('script');
     s.id=cb;
-    s.onerror=function(){
-      delete window[cb];
-      reject(new Error('Script load failed'));
-    };
+    s.onerror=function(){delete window[cb];reject(new Error('Script load failed'));};
     s.src=url+'?callback='+cb+'&data='+encodeURIComponent(JSON.stringify(payload))+'&t='+Date.now();
     document.head.appendChild(s);
   });
@@ -355,8 +352,7 @@ async function testSheets(){
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
    try{
-    var r=await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
-    var d=await r.json();
+    var d=await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
     if(d.success||d.added){setSt('on','Connected — test row written to sheet');saveConfig();}
     else setSt('err','Error: '+(d.error||'unknown'));
   }catch(e){setSt('err','Failed: '+e.message);}
@@ -430,8 +426,7 @@ async function syncSheets(){
     var rows=toSync.map(function(it){
       return{filename:it.file.name,skus:it.skus.join(' | ')||'none',note:it.note||'',status:it.status};
     });
-    var r=await gasPost(url,{sheetId:sid,rows:rows});
-    var d=await r.json();
+    var d=await gasPost(url,{sheetId:sid,rows:rows});
     if(d.success||d.added){
       toSync.forEach(function(it){it.synced=true;updateRow(it.id);});
       setSt('on','Synced '+toSync.length+' row'+(toSync.length>1?'s':'')+' · '+new Date().toLocaleTimeString());

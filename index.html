@@ -166,31 +166,18 @@ td{padding:10px 13px;vertical-align:middle}
 var items=[], running=false, syncing=false;
 
 function saveConfig(){
-  try{
-    localStorage.setItem('sw', document.getElementById('webhookUrl').value);
-    localStorage.setItem('ss2', document.getElementById('sheetId').value);
-  }catch(e){}
+  try{localStorage.setItem('sw',document.getElementById('webhookUrl').value);localStorage.setItem('ss2',document.getElementById('sheetId').value);}catch(e){}
   updateSheetLink(); syncButtons();
 }
-
 function loadConfig(){
-  try{
-    var w=localStorage.getItem('sw'), s=localStorage.getItem('ss2');
-    if(w) document.getElementById('webhookUrl').value=w;
-    if(s) document.getElementById('sheetId').value=s;
-  }catch(e){}
+  try{var w=localStorage.getItem('sw'),s=localStorage.getItem('ss2');if(w)document.getElementById('webhookUrl').value=w;if(s)document.getElementById('sheetId').value=s;}catch(e){}
   updateSheetLink();
 }
-
 function updateSheetLink(){
   var sid=document.getElementById('sheetId').value.trim();
-  var a=document.getElementById('sheetLink'), b=document.getElementById('ssLink');
-  if(sid){
-    var u='https://docs.google.com/spreadsheets/d/'+sid;
-    a.href=u; a.style.display='inline-flex'; b.href=u;
-  } else {
-    a.style.display='none';
-  }
+  var a=document.getElementById('sheetLink'),b=document.getElementById('ssLink');
+  if(sid){var u='https://docs.google.com/spreadsheets/d/'+sid;a.href=u;a.style.display='inline-flex';b.href=u;}
+  else a.style.display='none';
 }
 
 var drop=document.getElementById('drop');
@@ -204,30 +191,25 @@ function addFiles(files){
     var id='i'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
     items.push({id:id,file:f,url:URL.createObjectURL(f),status:'idle',skus:[],note:'',synced:false});
   });
-  renderQueue(); renderTable(); syncButtons();
+  renderQueue();renderTable();syncButtons();
 }
-
 function dc(s){return{idle:'idle',processing:'spin',done:'ok',error:'err'}[s]||'idle';}
-
 function renderQueue(){
   var q=document.getElementById('queue');
   if(!items.length){q.innerHTML='';return;}
   q.innerHTML=items.map(function(it){
-    return '<div class="qi" id="qi_'+it.id+'">'+
-      '<img src="'+it.url+'" loading="lazy"/>'+
+    return '<div class="qi" id="qi_'+it.id+'"><img src="'+it.url+'" loading="lazy"/>'+
       '<div class="qf"><span class="qn">'+it.file.name+'</span>'+
       '<span class="dot '+dc(it.status)+'" id="dot_'+it.id+'"></span></div>'+
-      '<button class="qdel" onclick="removeItem(\''+it.id+'\')">&#10005;</button></div>';
+      '<button class="qdel" onclick="removeItem(''+it.id+'')">&#10005;</button></div>';
   }).join('');
 }
-
 function removeItem(id){
   var it=items.find(function(x){return x.id===id;});
-  if(it) URL.revokeObjectURL(it.url);
+  if(it)URL.revokeObjectURL(it.url);
   items=items.filter(function(x){return x.id!==id;});
-  renderQueue(); renderTable(); syncButtons();
+  renderQueue();renderTable();syncButtons();
 }
-
 function clearAll(){
   items.forEach(function(it){URL.revokeObjectURL(it.url);});
   items=[];
@@ -236,56 +218,42 @@ function clearAll(){
   document.getElementById('resSection').style.display='none';
   document.getElementById('eb').style.display='none';
   document.getElementById('ss').style.display='none';
-  renderQueue(); renderTable(); syncButtons(); chips();
+  renderQueue();renderTable();syncButtons();chips();
 }
-
 function renderTable(){
-  var sec=document.getElementById('resSection'), tb=document.getElementById('tbody');
+  var sec=document.getElementById('resSection'),tb=document.getElementById('tbody');
   if(!items.length){sec.style.display='none';return;}
   sec.style.display='block';
   tb.innerHTML=items.map(function(it){
-    return '<tr id="tr_'+it.id+'">'+
-      '<td><img class="th" src="'+it.url+'"/><div class="fn" title="'+it.file.name+'">'+it.file.name+'</div></td>'+
-      '<td>'+rSkus(it)+'</td>'+
-      '<td>'+rStatus(it)+'</td>'+
+    return '<tr id="tr_'+it.id+'"><td><img class="th" src="'+it.url+'"/>'+
+      '<div class="fn" title="'+it.file.name+'">'+it.file.name+'</div></td>'+
+      '<td>'+rSkus(it)+'</td><td>'+rStatus(it)+'</td>'+
       '<td><div class="note">'+(it.note||'')+'</div></td>'+
       '<td>'+rSynced(it)+'</td></tr>';
   }).join('');
 }
-
 function rSkus(it){
-  if(!it.skus.length) return '<span class="pnone">—</span>';
+  if(!it.skus.length)return '<span class="pnone">—</span>';
   return '<div class="pills">'+it.skus.map(function(s){
-    return '<span class="pill" onclick="copyText(\''+s+'\')" title="Click to copy">'+s+'</span>';
+    return '<span class="pill" onclick="copyText(''+s+'')" title="Click to copy">'+s+'</span>';
   }).join('')+'</div>';
 }
-
 function rStatus(it){
   var m={idle:['sp','Pending'],processing:['sq','Reading…'],done:['so','Done'],error:['se','Error']};
   var d=m[it.status]||m.idle;
   return '<span class="sb '+d[0]+'">'+d[1]+'</span>';
 }
-
 function rSynced(it){
-  return it.synced
-    ? '<span style="font-size:10px;color:var(--green)">&#10003; Synced</span>'
-    : '<span style="font-size:10px;color:var(--t3)">—</span>';
+  return it.synced?'<span style="font-size:10px;color:var(--green)">&#10003; Synced</span>':'<span style="font-size:10px;color:var(--t3)">—</span>';
 }
-
 function updateRow(id){
   var it=items.find(function(x){return x.id===id;});
-  if(!it) return;
+  if(!it)return;
   var tr=document.getElementById('tr_'+id);
-  if(tr){
-    tr.children[1].innerHTML=rSkus(it);
-    tr.children[2].innerHTML=rStatus(it);
-    tr.children[3].innerHTML='<div class="note">'+(it.note||'')+'</div>';
-    tr.children[4].innerHTML=rSynced(it);
-  }
+  if(tr){tr.children[1].innerHTML=rSkus(it);tr.children[2].innerHTML=rStatus(it);tr.children[3].innerHTML='<div class="note">'+(it.note||'')+'</div>';tr.children[4].innerHTML=rSynced(it);}
   var dot=document.getElementById('dot_'+id);
-  if(dot) dot.className='dot '+dc(it.status);
+  if(dot)dot.className='dot '+dc(it.status);
 }
-
 function syncButtons(){
   var hasPend=items.some(function(x){return x.status==='idle';});
   var hasDone=items.some(function(x){return x.status==='done';});
@@ -296,36 +264,38 @@ function syncButtons(){
   document.getElementById('btnExport').disabled=!hasDone;
   document.getElementById('btnSync').disabled=!hasNew||syncing||!hasW||!hasS;
 }
-
 function chips(){
   document.getElementById('cntDone').textContent=items.filter(function(x){return x.status==='done';}).length;
   document.getElementById('cntSku').textContent=items.reduce(function(a,x){return a+x.skus.length;},0);
 }
-
 function hdrs(key){
-  return{
-    'Content-Type':'application/json',
-    'x-api-key':key,
-    'anthropic-version':'2023-06-01',
-    'anthropic-dangerous-direct-browser-access':'true'
-  };
+  return{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
 }
 
-// ── CRITICAL: Google Apps Script fetch must NOT set Content-Type
-// Setting Content-Type: application/json triggers CORS preflight which GAS blocks
-// Solution: omit Content-Type — GAS receives body as text and JSON.parse still works
+// JSONP — only way to call GAS from browser without CORS errors
 function gasPost(url, payload){
   return new Promise(function(resolve, reject){
-    var cb='gascb_'+Date.now();
-    window[cb]=function(data){
+    var cb='cb_'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
+    var timeout=setTimeout(function(){
       delete window[cb];
       var s=document.getElementById(cb);
-      if(s) s.parentNode.removeChild(s);
+      if(s)s.parentNode.removeChild(s);
+      reject(new Error('Timeout — check Script URL is correct'));
+    },15000);
+    window[cb]=function(data){
+      clearTimeout(timeout);
+      delete window[cb];
+      var s=document.getElementById(cb);
+      if(s)s.parentNode.removeChild(s);
       resolve(data);
     };
     var s=document.createElement('script');
     s.id=cb;
-    s.onerror=function(){delete window[cb];reject(new Error('Script load failed'));};
+    s.onerror=function(){
+      clearTimeout(timeout);
+      delete window[cb];
+      reject(new Error('Script load failed — check Script URL'));
+    };
     s.src=url+'?callback='+cb+'&data='+encodeURIComponent(JSON.stringify(payload))+'&t='+Date.now();
     document.head.appendChild(s);
   });
@@ -334,14 +304,11 @@ function gasPost(url, payload){
 async function testKey(){
   var key=document.getElementById('apiKey').value.trim();
   if(!key){toast('Enter API key first');return;}
-  toast('Testing…'); hideErr();
+  toast('Testing…');hideErr();
   try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:hdrs(key),
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'hi'}]})
-    });
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:hdrs(key),body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'hi'}]})});
     var d=await r.json();
-    if(d.content) toast('API key valid');
+    if(d.content)toast('API key valid');
     else showErr('Key error: '+(d.error&&d.error.message||'invalid'));
   }catch(e){showErr('Network error: '+e.message);}
 }
@@ -351,8 +318,8 @@ async function testSheets(){
   var sid=document.getElementById('sheetId').value.trim();
   if(!url||!sid){toast('Enter both Script URL and Sheet ID');return;}
   setSt('spin','Testing connection…');
-   try{
-    var d=await gasPost(url,{sheetId:sid, rows:[{filename:'__connection_test__',skus:'OK',note:'Connection test',status:'test'}]});
+  try{
+    var d=await gasPost(url,{sheetId:sid,rows:[{filename:'__test__',skus:'OK',note:'Connection test',status:'test'}]});
     if(d.success||d.added){setSt('on','Connected — test row written to sheet');saveConfig();}
     else setSt('err','Error: '+(d.error||'unknown'));
   }catch(e){setSt('err','Failed: '+e.message);}
@@ -360,7 +327,7 @@ async function testSheets(){
 }
 
 function setSt(state,msg){
-  var dot=document.getElementById('sdot'), txt=document.getElementById('stxt');
+  var dot=document.getElementById('sdot'),txt=document.getElementById('stxt');
   dot.className='sdot'+(state==='on'?' on':state==='err'?' err':state==='spin'?' spin':'');
   txt.textContent=msg;
 }
@@ -369,25 +336,22 @@ async function runAll(){
   var key=document.getElementById('apiKey').value.trim();
   if(!key){toast('Enter API key first');return;}
   var pending=items.filter(function(x){return x.status==='idle';});
-  if(!pending.length) return;
-  running=true; hideErr(); syncButtons();
+  if(!pending.length)return;
+  running=true;hideErr();syncButtons();
   document.getElementById('pw').style.display='block';
   var done=0;
   for(var i=0;i<pending.length;i++){
     var it=pending[i];
-    it.status='processing'; updateRow(it.id);
+    it.status='processing';updateRow(it.id);
     try{
       var b64=await toB64(it.file);
       var mime=it.file.type||'image/jpeg';
-      var res=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST', headers:hdrs(key),
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514', max_tokens:400,
+      var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:hdrs(key),
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,
           messages:[{role:'user',content:[
             {type:'image',source:{type:'base64',media_type:mime,data:b64}},
             {type:'text',text:'Extract ALL SKU or product code numbers from this furniture product image.\n\nSKUs appear as:\n- 5-7 digit numbers in a dark badge at bottom center or corners\n- Numeric codes near price tags\n- Examples: 161261 (bottom badge), 167029 (top-left)\n\nReturn ONLY valid JSON:\n{"skus":["123456"],"note":"where you found it"}\n\nIf none: {"skus":[],"note":"no SKU visible"}'}
-          ]}]
-        })
+          ]}]})
       });
       if(!res.ok){var er=await res.json();throw new Error((er.error&&er.error.message)||'HTTP '+res.status);}
       var data=await res.json();
@@ -398,20 +362,17 @@ async function runAll(){
       it.skus=(parsed.skus||[]).map(function(s){return String(s).trim();}).filter(Boolean);
       it.note=parsed.note||'';
       it.status='done';
-    }catch(e){
-      it.status='error';
-      it.note=(e.message||'error').slice(0,100);
-    }
+    }catch(e){it.status='error';it.note=(e.message||'error').slice(0,100);}
     done++;
     document.getElementById('pf').style.width=(done/pending.length*100)+'%';
     document.getElementById('pl').textContent=done+' / '+pending.length;
-    updateRow(it.id); chips();
+    updateRow(it.id);chips();
   }
-  running=false; syncButtons();
+  running=false;syncButtons();
   toast('Done — '+done+' image'+(done>1?'s':'')+' processed');
   var hasW=!!document.getElementById('webhookUrl').value.trim();
   var hasS=!!document.getElementById('sheetId').value.trim();
-  if(hasW&&hasS) setTimeout(syncSheets, 600);
+  if(hasW&&hasS)setTimeout(syncSheets,600);
 }
 
 async function syncSheets(){
@@ -420,7 +381,7 @@ async function syncSheets(){
   if(!url||!sid){toast('Configure Script URL and Sheet ID first');return;}
   var toSync=items.filter(function(x){return x.status==='done'&&!x.synced;});
   if(!toSync.length){toast('Nothing new to sync');return;}
-  syncing=true; syncButtons();
+  syncing=true;syncButtons();
   setSt('spin','Syncing '+toSync.length+' row'+(toSync.length>1?'s':'')+'…');
   try{
     var rows=toSync.map(function(it){
@@ -438,8 +399,9 @@ async function syncSheets(){
       toast('Sync failed');
     }
   }catch(e){setSt('err','Sync failed: '+e.message);toast('Sync failed');}
-  syncing=false; syncButtons();
+  syncing=false;syncButtons();
 }
+
 function toB64(file){
   return new Promise(function(res,rej){
     var r=new FileReader();
@@ -448,7 +410,6 @@ function toB64(file){
     r.readAsDataURL(file);
   });
 }
-
 function exportCSV(){
   var rows=[['Filename','SKUs','Status','Notes','Synced']];
   items.forEach(function(it){rows.push([it.file.name,it.skus.join(' | '),it.status,it.note,it.synced?'Yes':'No']);});
@@ -456,30 +417,25 @@ function exportCSV(){
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download='skus_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); URL.revokeObjectURL(a.href);
+  a.click();URL.revokeObjectURL(a.href);
   toast('CSV exported');
 }
-
 function copyText(t){navigator.clipboard.writeText(t).then(function(){toast('Copied: '+t);});}
-
 function copyAll(){
-  var seen={}, all=[];
+  var seen={},all=[];
   items.forEach(function(it){it.skus.forEach(function(s){if(!seen[s]){seen[s]=true;all.push(s);}});});
   if(!all.length){toast('No SKUs yet');return;}
   navigator.clipboard.writeText(all.join('\n')).then(function(){toast('Copied '+all.length+' SKUs');});
 }
-
 function showErr(m){var b=document.getElementById('eb');b.textContent=m;b.style.display='block';}
 function hideErr(){document.getElementById('eb').style.display='none';}
-
 var tt;
 function toast(m){
   var el=document.getElementById('toast');
-  el.textContent=m; el.classList.add('show');
+  el.textContent=m;el.classList.add('show');
   clearTimeout(tt);
   tt=setTimeout(function(){el.classList.remove('show');},2400);
 }
-
 loadConfig();
 </script>
 </body>
